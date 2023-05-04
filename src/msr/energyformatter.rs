@@ -28,6 +28,7 @@ impl ValueFormatter for EnergyFormatter {
                 "{} elem/s/2",
                 f64::from(elems as u32) / uj
             ),
+            #[cfg(feature = "criterion4")]
             Throughput::BytesDecimal(bytes) => format!(
                 "{} B/uJ",
                 (bytes as f64) / uj
@@ -55,6 +56,7 @@ impl ValueFormatter for EnergyFormatter {
                 }
                 "elem/uJ"
             },
+            #[cfg(feature = "criterion4")]
             Throughput::BytesDecimal(bytes) => {
                 for val in values {
                     *val = (bytes as f64) / (*val)

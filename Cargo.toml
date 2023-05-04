@@ -15,5 +15,9 @@ libc = "0.2.142"
 
 [dev-dependencies]
 
+[features]
+criterion4 = []
+criterion3 = []
+
 [[bench]]
 name = "msr"

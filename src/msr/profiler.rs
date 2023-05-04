@@ -1,8 +1,7 @@
 use std::arch::asm;
-use std::fs::{File, OpenOptions};
-use std::io::Read;
+use std::fs::OpenOptions;
 use std::os::unix::fs::FileExt;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::Command;
 use std::str::FromStr;
 
@@ -12,11 +11,11 @@ use libc::{__errno_location, iopl};
 struct EnergyProfiler {}
 
 impl Profiler for EnergyProfiler {
-    fn start_profiling(&mut self, benchmark_id: &str, benchmark_dir: &Path) {
+    fn start_profiling(&mut self, _benchmark_id: &str, _benchmark_dir: &Path) {
 
     }
 
-    fn stop_profiling(&mut self, benchmark_id: &str, benchmark_dir: &Path) {
+    fn stop_profiling(&mut self, _benchmark_id: &str, _benchmark_dir: &Path) {
         todo!()
     }
 }
@@ -37,13 +36,6 @@ pub fn cmd_rdmsr() -> Result<u64, String> {
 
 
 pub fn read_single_core_msr_file(cpu: usize) -> Result<u64, String> {
-    // unsafe {
-    //     let i = iopl(3);
-    //     println!("iopl ret: {i}");
-    //     if i == -1 {
-    //         println!("errno {}", __errno_location().read());
-    //     }
-    // }
     let msr_file_name = format!("/dev/cpu/{cpu}/msr");
 
 
