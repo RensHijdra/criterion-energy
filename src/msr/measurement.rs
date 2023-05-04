@@ -1,20 +1,24 @@
-use std::ops::Add;
+use std::ops::{Add, Mul};
 use criterion::measurement::{Measurement, ValueFormatter};
 use crate::msr::energyformatter::EnergyFormatter;
-use crate::msr::profiler::read_single_core_msr_file;
+use crate::msr::profiler::{read_power_unit, read_raw_energy, read_single_core_msr_file};
 
 pub struct Energy;
 
 impl Measurement for Energy {
     type Intermediate = u64;
-    type Value = u64;
+    type Value = f64;
 
     fn start(&self) -> Self::Intermediate {
-        read_single_core_msr_file(0).unwrap()
+        read_raw_energy(0)
     }
 
     fn end(&self, intermediate: Self::Intermediate) -> Self::Value {
-        read_single_core_msr_file(0).unwrap() - intermediate
+        // If the u64 wraps (once) during the measurement, wrapping around 0 gives the correct measurement
+        // Wrapping is expected to occur
+        let raw_value = read_raw_energy(0).wrapping_sub(intermediate);
+        let unit = read_power_unit(0);
+        (raw_value as f64).mul(unit)
     }
 
     fn add(&self, v1: &Self::Value, v2: &Self::Value) -> Self::Value {
@@ -22,7 +26,7 @@ impl Measurement for Energy {
     }
 
     fn zero(&self) -> Self::Value {
-        0u64
+        0f64
     }
 
     fn to_f64(&self, value: &Self::Value) -> f64 {

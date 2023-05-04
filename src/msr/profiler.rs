@@ -8,12 +8,18 @@ use std::str::FromStr;
 use criterion::profiler::Profiler;
 use libc::{__errno_location, iopl};
 
+struct MSR {
+    string: &'static str,
+    numeric: u64,
+}
+
+static MSR_ENERGY_STATUS: MSR = MSR { string: "0xc001029a", numeric: 0xc001029au64 };
+static MSR_POWER_UNIT: MSR = MSR { string: "0xC001_0299", numeric: 0xC001_0299u64 };
+
 struct EnergyProfiler {}
 
 impl Profiler for EnergyProfiler {
-    fn start_profiling(&mut self, _benchmark_id: &str, _benchmark_dir: &Path) {
-
-    }
+    fn start_profiling(&mut self, _benchmark_id: &str, _benchmark_dir: &Path) {}
 
     fn stop_profiling(&mut self, _benchmark_id: &str, _benchmark_dir: &Path) {
         todo!()
@@ -21,8 +27,8 @@ impl Profiler for EnergyProfiler {
 }
 
 
-pub fn cmd_rdmsr() -> Result<u64, String> {
-    let out = Command::new("rdmsr").arg("-d").arg("0xc001029a").output().unwrap();
+pub fn cmd_rdmsr(msr: &MSR) -> Result<u64, String> {
+    let out = Command::new("rdmsr").arg("-d").arg(msr.string).output().unwrap();
     if out.status.success() {
         let string = String::from_utf8(out.stdout).unwrap();
         match u64::from_str(&string) {
@@ -35,7 +41,7 @@ pub fn cmd_rdmsr() -> Result<u64, String> {
 }
 
 
-pub fn read_single_core_msr_file(cpu: usize) -> Result<u64, String> {
+pub fn read_single_core_msr_file(msr: &MSR, cpu: usize) -> Result<u64, String> {
     let msr_file_name = format!("/dev/cpu/{cpu}/msr");
 
 
@@ -46,7 +52,7 @@ pub fn read_single_core_msr_file(cpu: usize) -> Result<u64, String> {
 
     let mut buf: [u8; 8] = [0, 0, 0, 0, 0, 0, 0, 0];
 
-    match file.read_at(&mut buf, 0xc001029a) {
+    match file.read_at(&mut buf, msr.numeric) {
         Ok(size) => { if size != 8 { return Err(String::from("energy-profiler: : read wrong amount of data")); } }
         Err(err) => return Err(String::from(format!("energy-profiler: : CPU {cpu} cannot read MSR 0xc001029a: {err}")))
     }
@@ -59,9 +65,9 @@ Loads the contents of a 64-bit model-specific register (MSR) specified in the EC
 registers EDX:EAX. The EDX register receives the high-order 32 bits and the EAX register receives
 the low order bits.
  */
-pub fn read_single_core_msr(cpu: i32) {
+pub fn read_single_core_msr(msr: &MSR, cpu: i32) {
     println!("Reading single core {cpu}");
-    let msr: u64 = 3221291674; // Core Energy Status MSR
+    let msr_num: u64 = msr.numeric; // Core Energy Status MSR
     let hi: u64;
     let lo: u64;
     unsafe {
@@ -79,7 +85,7 @@ pub fn read_single_core_msr(cpu: i32) {
         // "pop rax",
         // "pop rdx",
         // "pop rcx",
-        in("rcx") 3221291674u64,
+        in("rcx") msr_num,
         // out("edx") hi,
         // out("eax") lo,
         );
@@ -88,15 +94,28 @@ pub fn read_single_core_msr(cpu: i32) {
     // println!("{} {}", hi, lo);
 }
 
+pub fn read_raw_energy(cpu: usize) -> u64 {
+    read_single_core_msr_file(&MSR_ENERGY_STATUS, cpu).unwrap()
+}
+
+pub fn read_power_unit(cpu: usize) -> f64 {
+    let i = read_single_core_msr_file(&MSR_POWER_UNIT, cpu).unwrap();
+    // The unit ESU is contained in bits 12:8
+    let bits: u8 = (i << (63 - 12) >> (63 - 5)) as u8;
+
+    // The value is 1/2^ESU
+    0.5f64.powi(bits as i32)
+}
+
 
 #[test]
 fn test_asm_rdmsr() {
     println!("Testing");
-    read_single_core_msr(0);
+    read_single_core_msr(&MSR_ENERGY_STATUS, 0);
 }
 
 #[test]
 fn test_file_msr() {
-    read_single_core_msr_file(0).unwrap();
-    assert!(read_single_core_msr_file(0).is_ok())
+    read_single_core_msr_file(&MSR_ENERGY_STATUS, 0).unwrap();
+    assert!(read_single_core_msr_file(&MSR_ENERGY_STATUS, 0).is_ok())
 }
