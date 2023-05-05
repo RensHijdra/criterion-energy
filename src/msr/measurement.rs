@@ -19,8 +19,10 @@ impl Measurement for Energy {
         // If the u64 wraps (once) during the measurement, wrapping around 0 gives the correct measurement
         // Wrapping is expected to occur
         let raw_value = read_raw_energy(0).wrapping_sub(intermediate);
-        let unit = read_power_unit(0); // micro-joules per unit raw value
-        (raw_value as f64).mul(unit)  // micro-joules
+        println!("Difference is {}", raw_value);
+        let unit = read_power_unit(0); // joules per unit raw value
+        println!("Unit is {}", unit);
+        (raw_value as f64).mul(unit)  // joules
     }
 
     fn add(&self, v1: &Self::Value, v2: &Self::Value) -> Self::Value {
