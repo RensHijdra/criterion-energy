@@ -36,11 +36,11 @@ impl ValueFormatter for EnergyFormatter {
         }
     }
 
-    fn scale_values(&self, typical_value: f64, values: &mut [f64]) -> &'static str {
+    fn scale_values(&self, _typical_value: f64, _values: &mut [f64]) -> &'static str {
         todo!()
     }
 
-    fn scale_throughputs(&self, typical_value: f64, throughput: &Throughput, values: &mut [f64]) -> &'static str {
+    fn scale_throughputs(&self, _typical_value: f64, throughput: &Throughput, values: &mut [f64]) -> &'static str {
         match *throughput {
             Throughput::Bytes(bytes) => {
                 // Convert nanoseconds/iteration to bytes/half-second.
@@ -67,7 +67,7 @@ impl ValueFormatter for EnergyFormatter {
 
     }
 
-    fn scale_for_machines(&self, values: &mut [f64]) -> &'static str {
+    fn scale_for_machines(&self, _values: &mut [f64]) -> &'static str {
         todo!()
     }
 }

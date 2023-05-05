@@ -1,7 +1,9 @@
 use std::ops::{Add, Mul};
+
 use criterion::measurement::{Measurement, ValueFormatter};
+
 use crate::msr::energyformatter::EnergyFormatter;
-use crate::msr::profiler::{read_power_unit, read_raw_energy, read_single_core_msr_file};
+use crate::msr::profiler::{read_power_unit, read_raw_energy};
 
 pub struct Energy;
 
