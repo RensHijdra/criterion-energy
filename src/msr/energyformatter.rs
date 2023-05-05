@@ -36,7 +36,7 @@ impl ValueFormatter for EnergyFormatter {
         }
     }
 
-    fn scale_values(&self, _typical_value: f64, values: &mut [f64]) -> &'static str {
+    fn scale_values(&self, _typical_value: f64, _values: &mut [f64]) -> &'static str {
         "J"
     }
 
@@ -66,7 +66,7 @@ impl ValueFormatter for EnergyFormatter {
         }
     }
 
-    fn scale_for_machines(&self, values: &mut [f64]) -> &'static str {
+    fn scale_for_machines(&self, _values: &mut [f64]) -> &'static str {
         // for val in values {
         //     *val /= 1e3;
         // }

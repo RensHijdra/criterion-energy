@@ -102,7 +102,7 @@ pub(crate) fn read_power_unit(cpu: usize) -> f64 {
     let i = read_single_core_msr_file(&MSR_POWER_UNIT, cpu).unwrap();
 
     // The Energy Status Unit (ESU) is contained in bits 12:8
-    let bits: u8 = (i << (63 - 12) >> (63 - 5)) as u8;
+    let bits: u8 = (i << (63 - 12) >> (63 - 4)) as u8;
 
     // The value is 1/2^ESU
     0.5f64.powi(bits as i32)
