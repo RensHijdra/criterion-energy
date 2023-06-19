@@ -1,15 +1,14 @@
 [package]
-name = "energy-profiler"
+name = "criterion-energy"
 version = "0.1.0"
 edition = "2021"
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
 
 
 [dependencies]
-#criterion = "0.4.0"
-perf-event-open-sys = "4.0.0"
 criterion = ">0.3.0" # Makes cargo use the available version in the crate. Profiler support is since 0.3.0
 criterion-macro = ">0.3.0"
+minicov = { version = "0.3.2", optional = true, features = ["default", "alloc"] }
 
 libc = "0.2.142"
 
@@ -18,6 +17,7 @@ libc = "0.2.142"
 [features]
 criterion4 = []
 criterion3 = []
+coverage = ["dep:minicov"]
 
 [[bench]]
 name = "msr"
