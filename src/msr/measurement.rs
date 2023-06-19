@@ -50,10 +50,7 @@ impl Measurement for Energy {
         // Wrapping is expected to occur
         let raw_value = read_raw_energy(CPU).wrapping_sub(intermediate);
 
-
-        println!("Difference is {}", raw_value);
         let unit = read_power_unit(CPU); // joules per unit raw value
-        println!("Unit is {}", unit);
         (raw_value as f64).mul(unit)  // joules
     }
 
