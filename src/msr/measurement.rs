@@ -8,6 +8,8 @@ use crate::msr::util::{read_power_unit, read_raw_energy};
 
 pub struct Energy;
 
+const CPU: usize = 3;
+
 #[cfg(feature = "coverage")]
 fn capture_minicov_coverage() {
     let mut coverage = vec![];
@@ -33,7 +35,7 @@ impl Measurement for Energy {
 
     #[cfg(not(feature = "coverage"))]
     fn start(&self) -> Self::Intermediate {
-        read_raw_energy(3)
+        read_raw_energy(CPU)
     }
 
     #[cfg(feature = "coverage")]
@@ -46,11 +48,11 @@ impl Measurement for Energy {
     fn end(&self, intermediate: Self::Intermediate) -> Self::Value {
         // If the u64 wraps (once) during the measurement, wrapping around 0 gives the correct measurement
         // Wrapping is expected to occur
-        let raw_value = read_raw_energy(3).wrapping_sub(intermediate);
+        let raw_value = read_raw_energy(CPU).wrapping_sub(intermediate);
 
 
         println!("Difference is {}", raw_value);
-        let unit = read_power_unit(3); // joules per unit raw value
+        let unit = read_power_unit(CPU); // joules per unit raw value
         println!("Unit is {}", unit);
         (raw_value as f64).mul(unit)  // joules
     }
