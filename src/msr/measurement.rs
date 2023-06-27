@@ -1,4 +1,3 @@
-
 use std::ops::{Add, Mul};
 
 use criterion::measurement::{Measurement, ValueFormatter};
@@ -6,9 +5,9 @@ use criterion::measurement::{Measurement, ValueFormatter};
 use crate::msr::energyformatter::EnergyFormatter;
 use crate::msr::util::{read_power_unit, read_raw_energy};
 
-pub struct Energy;
-
 const CPU: usize = 3;
+
+pub struct Energy;
 
 impl Measurement for Energy {
     type Intermediate = u64;

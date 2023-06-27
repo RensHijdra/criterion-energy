@@ -1,5 +1,5 @@
 use std::env;
-use std::ops::{Add};
+use std::ops::Add;
 
 use criterion::measurement::{Measurement, ValueFormatter};
 
