@@ -1,10 +1,11 @@
-use std::fs::OpenOptions;
-use std::os::unix::fs::FileExt;
-
 struct MSR {
+    #[allow(dead_code)]
     string: &'static str,
     numeric: u64,
 }
+use std::fs::OpenOptions;
+
+use std::os::unix::fs::FileExt;
 
 static MSR_ENERGY_STATUS: MSR = MSR { string: "0xc001029a", numeric: 0xc001029au64 };
 static MSR_POWER_UNIT: MSR = MSR { string: "0xC001_0299", numeric: 0xC001_0299u64 };
