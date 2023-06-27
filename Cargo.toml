@@ -3,16 +3,10 @@ name = "criterion-energy"
 version = "0.1.0"
 edition = "2021"
 
-
-
 [dependencies]
 criterion = ">0.3.0" # Makes cargo use the available version in the crate. Profiler support is since 0.3.0
 criterion-macro = ">0.3.0"
 minicov = { version = "0.3.2", optional = true, features = ["default", "alloc"] }
-
-libc = "0.2.142"
-
-[dev-dependencies]
 
 [features]
 criterion4 = []
