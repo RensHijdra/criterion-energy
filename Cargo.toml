@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 criterion = ">=0.3.0, <0.5" # Makes cargo use the available version in the crate. Profiler support is since 0.3.0
-criterion-macro = ">=0.3.0. <0.5"
+criterion-macro = ">=0.3.0, <0.5"
 minicov = { version = "0.3.2", optional = true, features = ["default", "alloc"] }
 
 [features]
