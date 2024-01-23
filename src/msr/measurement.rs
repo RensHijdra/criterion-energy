@@ -5,6 +5,8 @@ use criterion::measurement::{Measurement, ValueFormatter};
 use crate::msr::energyformatter::EnergyFormatter;
 use crate::msr::util::{read_power_unit, read_raw_energy};
 
+
+// TODO make this variable e.g. get_env
 const CPU: usize = 3;
 
 pub struct Energy;
@@ -18,9 +20,10 @@ impl Measurement for Energy {
     }
 
     fn end(&self, intermediate: Self::Intermediate) -> Self::Value {
-        // If the u64 wraps (once) during the measurement, wrapping around 0 gives the correct measurement
-        // Wrapping is expected to occur
-        let raw_value = read_raw_energy(CPU).wrapping_sub(intermediate);
+        // Data is contained in a u64 register, but actually wraps at u32::MAX.
+        // If the u32 wraps (once) during the measurement, wrapping around 0 gives the correct measurement
+        // Wrapping is expected to occur every so often
+        let raw_value = (read_raw_energy(CPU) as u32).wrapping_sub(intermediate as u32);
 
         let unit = read_power_unit(CPU); // joules per unit raw value
         (raw_value as f64).mul(unit)  // joules
