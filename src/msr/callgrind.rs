@@ -1,33 +1,20 @@
-use std::env;
-use std::ops::Add;
-
 use criterion::measurement::{Measurement, ValueFormatter};
 
 use crate::msr::energyformatter::EnergyFormatter;
 
 pub struct Energy;
 
-fn capture_minicov_coverage() {
-    let mut coverage = vec![];
-    unsafe {
-        // Note that this function is not thread-safe! Use a lock if needed.
-        minicov::capture_coverage(&mut coverage).unwrap();
-    }
-    let string = env::var("MINICOV_PROFILE_FILE").unwrap_or("output.profraw".to_string());
-    std::fs::write(string, coverage).unwrap();
-}
 
 impl Measurement for Energy {
     type Intermediate = ();
     type Value = f64;
 
     fn start(&self) -> Self::Intermediate {
-        // Reset coverage so we only measure the benchmark itself
-        minicov::reset_coverage();
+        partial_callgrind::start();
     }
 
     fn end(&self, _: Self::Intermediate) -> Self::Value {
-        capture_minicov_coverage();
+        partial_callgrind::stop();
         0.0
     }
 
@@ -39,7 +26,7 @@ impl Measurement for Energy {
         0f64
     }
 
-    fn to_f64(&self, value: &Self::Value) -> f64 {
+    fn to_f64(&self, _: &Self::Value) -> f64 {
         0.0
     }
 
